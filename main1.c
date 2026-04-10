@@ -147,10 +147,12 @@ int main ()
         return 1;
     }
 
+    int total = 0;
+
     // scan every line in the file
     while(fscanf(fp, "%u", &line) == 1){ // while there are still addresses to be scanned in
         div_addr(line);
-        
+
         // look in TLB for address
         unsigned int current_frame = access_memory(page, backing_store);
         // translate frame number into address by adding offset
@@ -162,9 +164,15 @@ int main ()
         fprintf(out1, "%d\n", line);
         fprintf(out2, "%d\n", phys_addr);
         fprintf(out3, "%d\n", value);
+        total++;
     }
 
+    // Print statistics to stdout
+    printf("Page faults = %d / %d, %.2f\n", pg_faults, total, (float)pg_faults / total);
+    printf("TLB hits = %d / %d, %.2f\n",    tlb_hits,  total, (float)tlb_hits  / total);
+
     fclose(fp);
+    fclose(backing_store);
     fclose(out1);
     fclose(out2);
     fclose(out3);
